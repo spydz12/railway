@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[8492,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/01ttxv3e3n-cf.js","/_next/static/chunks/11-seqpdk-qr0.js","/_next/static/chunks/0oj.8ja-hwaqs.js"],"Sidebar"]
-3:I[31208,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/01ttxv3e3n-cf.js","/_next/static/chunks/11-seqpdk-qr0.js","/_next/static/chunks/0oj.8ja-hwaqs.js"],"Header"]
-4:I[39756,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/01ttxv3e3n-cf.js"],"default"]
-5:I[37457,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/01ttxv3e3n-cf.js"],"default"]
-0:{"rsc":["$","$1","c",{"children":[[["$","script","script-0",{"src":"/_next/static/chunks/11-seqpdk-qr0.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/0oj.8ja-hwaqs.js","async":true}]],["$","div",null,{"className":"flex h-screen bg-background","children":[["$","$L2",null,{}],["$","div",null,{"className":"flex-1 flex flex-col overflow-hidden","children":[["$","$L3",null,{}],["$","main",null,{"className":"flex-1 overflow-auto p-6","children":["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]}]]}]]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"5z5GpRzLyP8SAOTN0fm7b"}
