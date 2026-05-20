@@ -5,13 +5,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY tsconfig.json ./
-COPY tsconfig.build.json ./
-COPY src ./src
+COPY . .
 
 RUN npm run build
 
-# ---
+# ----
 
 FROM node:20-alpine AS runner
 
@@ -23,9 +21,10 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
 
 RUN mkdir -p logs
 
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["node","dist/bootstrap/index.js"]
