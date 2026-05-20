@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Privat\\\\Downloads\\\\etoro\\\\project\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(find \"c:\\\\\\\\Users\\\\Privat\\\\Downloads\\\\etoro\\\\project\" -type d)",
+      "Bash(find \"c:\\\\\\\\Users\\\\Privat\\\\Downloads\\\\etoro\\\\project/src\" -type d)",
+      "Bash(find \"c:\\\\\\\\Users\\\\Privat\\\\Downloads\\\\etoro\\\\project/src\" -name \"*scan*\" -o -name \"*filter*\" -o -name \"*guard*\")",
+      "Bash(find \"c:\\\\\\\\Users\\\\Privat\\\\Downloads\\\\etoro\\\\project/src/scanner\" -type f)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}

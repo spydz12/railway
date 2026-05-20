@@ -1,0 +1,13 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/dashboard/ai/page": "/dashboard/ai",
+  "/dashboard/backtests/page": "/dashboard/backtests",
+  "/dashboard/page": "/dashboard",
+  "/dashboard/regime/page": "/dashboard/regime",
+  "/dashboard/risk/page": "/dashboard/risk",
+  "/dashboard/signals/[id]/page": "/dashboard/signals/[id]",
+  "/dashboard/signals/page": "/dashboard/signals",
+  "/dashboard/strategies/page": "/dashboard/strategies",
+  "/dashboard/telegram/page": "/dashboard/telegram"
+}

@@ -1,0 +1,13 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/dashboard/ai/page": "app/dashboard/ai/page.js",
+  "/dashboard/backtests/page": "app/dashboard/backtests/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/regime/page": "app/dashboard/regime/page.js",
+  "/dashboard/risk/page": "app/dashboard/risk/page.js",
+  "/dashboard/signals/[id]/page": "app/dashboard/signals/[id]/page.js",
+  "/dashboard/signals/page": "app/dashboard/signals/page.js",
+  "/dashboard/strategies/page": "app/dashboard/strategies/page.js",
+  "/dashboard/telegram/page": "app/dashboard/telegram/page.js"
+}
