@@ -1,7 +1,11 @@
 import { config } from '../config';
 import { calculateRiskProfile } from '../risk';
-import { getActiveStocks, getActiveTradeIdeas, getRecentSignalPerformances } from '../database/queries';
+import { getActiveStocks, getRecentSignalPerformances, getRecentTradeIdeas } from '../database/queries';
 import type { TradeIdea } from '../database/queries';
+import { createComponentLogger } from '../utils/logger';
+
+const log = createComponentLogger('portfolio');
+const PORTFOLIO_COUNTED_STATUSES = new Set(['active', 'open', 'entered']);
 
 export interface PortfolioExposure {
   totalActiveExposure: number;
@@ -60,7 +64,17 @@ function normalizeSectorName(sector: string | null | undefined): string {
 }
 
 export async function getPortfolioSnapshot(): Promise<PortfolioExposure> {
-  const activeIdeas = await getActiveTradeIdeas();
+  const recentIdeas = await getRecentTradeIdeas(2000);
+  const countedIdeas = recentIdeas.filter((idea) => PORTFOLIO_COUNTED_STATUSES.has(String(idea.status || '').toLowerCase()));
+  const observedStatuses = Array.from(new Set(recentIdeas.map((idea) => String(idea.status || '').toLowerCase())));
+
+  log.info('[PORTFOLIO_EXPOSURE]', {
+    countedStatuses: Array.from(PORTFOLIO_COUNTED_STATUSES),
+    observedStatuses,
+    totalFetchedIdeas: recentIdeas.length,
+    countedIdeas: countedIdeas.length,
+  });
+
   const stocks = await getActiveStocks();
   const stockMap = new Map<string, string>(stocks.map((stock) => [stock.ticker, normalizeSectorName(stock.sector)]));
 
@@ -72,7 +86,7 @@ export async function getPortfolioSnapshot(): Promise<PortfolioExposure> {
   const regimeExposure: Record<string, number> = {};
   const clusterMap = new Map<string, { symbols: string[]; exposure: number }>();
 
-  activeIdeas.forEach((idea) => {
+  countedIdeas.forEach((idea) => {
     const exposure = calculateIdeaExposure(idea);
     totalExposure += exposure;
     confidenceSum += idea.confidence_score ?? 0;
@@ -115,9 +129,9 @@ export async function getPortfolioSnapshot(): Promise<PortfolioExposure> {
     sectorExposure,
     regimeExposure,
     correlationClusters,
-    averageConfidence: activeIdeas.length > 0 ? Number((confidenceSum / activeIdeas.length).toFixed(1)) : 0,
+    averageConfidence: countedIdeas.length > 0 ? Number((confidenceSum / countedIdeas.length).toFixed(1)) : 0,
     portfolioRiskLevel: 'LOW',
-    activeTradeCount: activeIdeas.length,
+    activeTradeCount: countedIdeas.length,
   };
 
   snapshot.portfolioRiskLevel = calculatePortfolioRiskLevel(snapshot);
