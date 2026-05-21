@@ -132,6 +132,13 @@ export async function runCryptoScan(): Promise<void> {
 
   const totalCount = await countTodayTradeIdeasByMarketType('crypto');
   if (totalCount >= config.crypto.maxSignalsPerDay) {
+    log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+      reason: 'CRYPTO_MAX_SIGNALS_PER_DAY',
+      current: totalCount,
+      max: config.crypto.maxSignalsPerDay,
+      marketType: 'crypto',
+      scope: 'scan_start',
+    });
     log.info(`[CRYPTO_SCAN] Max crypto signals reached (${totalCount}/${config.crypto.maxSignalsPerDay})`);
     return;
   }
@@ -170,10 +177,26 @@ export async function runCryptoScan(): Promise<void> {
       summary.symbolsScanned += 1;
       const todayCount = await countTodayTradeIdeasByMarketType('crypto');
       if (todayCount >= config.crypto.maxSignalsPerDay) {
+        log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+          reason: 'CRYPTO_MAX_SIGNALS_PER_DAY',
+          current: todayCount,
+          max: config.crypto.maxSignalsPerDay,
+          marketType: 'crypto',
+          scope: 'symbol_precheck',
+          symbol,
+        });
         return;
       }
 
       if (await hasActiveIdeaForTicker(symbol)) {
+        log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+          reason: 'ACTIVE_IDEA_EXISTS',
+          current: 1,
+          max: 1,
+          marketType: 'crypto',
+          scope: 'symbol_precheck',
+          symbol,
+        });
         log.info('[CRYPTO_SCAN] active idea exists, skipping symbol', { symbol });
         return;
       }
@@ -674,7 +697,17 @@ export async function runCryptoScan(): Promise<void> {
         );
 
         const finalCount = await countTodayTradeIdeasByMarketType('crypto');
-        if (finalCount >= config.crypto.maxSignalsPerDay) return;
+        if (finalCount >= config.crypto.maxSignalsPerDay) {
+          log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+            reason: 'CRYPTO_MAX_SIGNALS_PER_DAY',
+            current: finalCount,
+            max: config.crypto.maxSignalsPerDay,
+            marketType: 'crypto',
+            scope: 'watch_insert',
+            symbol,
+          });
+          return;
+        }
 
         bestWatchSignal.executionMode = 'watch';
         bestWatchSignal.cryptoMetadata = {
@@ -738,6 +771,23 @@ export async function runCryptoScan(): Promise<void> {
       );
       if (portfolioResult.rejected) {
         summary.portfolioRejected += 1;
+        log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+          reason: 'PORTFOLIO_LIMIT',
+          current: {
+            totalActiveExposure: Number(portfolioResult.snapshot.totalActiveExposure.toFixed(2)),
+            normalizedExposure: Number(portfolioResult.snapshot.normalizedExposure.toFixed(2)),
+            cryptoAllocationPct: Number(portfolioResult.snapshot.cryptoAllocation.toFixed(2)),
+            correlationClusters: portfolioResult.snapshot.correlationClusters.length,
+          },
+          max: {
+            maxActiveExposure: config.portfolio.maxActiveExposure,
+            maxCryptoAllocationPct: config.portfolio.maxCryptoAllocationPct,
+            maxCorrelatedTrades: config.portfolio.correlatedTradeLimit,
+          },
+          marketType: 'crypto',
+          symbol,
+          detail: portfolioResult.reason,
+        });
         log.info('[PORTFOLIO_RISK_REJECT]', {
           symbol,
           strategy: bestSignal.strategy,
@@ -842,7 +892,17 @@ export async function runCryptoScan(): Promise<void> {
       bestSignal.reasons.push(`Execution quality slippage ${executionResult.executionQuality.slippagePct}%`);
 
       const finalCount = await countTodayTradeIdeasByMarketType('crypto');
-      if (finalCount >= config.crypto.maxSignalsPerDay) return;
+      if (finalCount >= config.crypto.maxSignalsPerDay) {
+        log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+          reason: 'CRYPTO_MAX_SIGNALS_PER_DAY',
+          current: finalCount,
+          max: config.crypto.maxSignalsPerDay,
+          marketType: 'crypto',
+          scope: 'final_insert',
+          symbol,
+        });
+        return;
+      }
 
       const performanceSummary = await getStrategyRegimePerformanceSummary(
         bestSignal.strategy,

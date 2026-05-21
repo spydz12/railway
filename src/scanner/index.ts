@@ -81,6 +81,13 @@ export async function runScan(): Promise<void> {
   // pass the count check before any of them increments it.
   const initialCount = await countTodayTradeIdeas();
   if (initialCount >= config.scanner.maxSignalsPerDay) {
+    log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+      reason: 'MAX_SIGNALS_PER_DAY',
+      current: initialCount,
+      max: config.scanner.maxSignalsPerDay,
+      marketType: 'stocks',
+      scope: 'scan_start',
+    });
     log.info(`Max signals per day reached (${initialCount}/${config.scanner.maxSignalsPerDay}). Skipping scan.`);
     return;
   }
@@ -182,10 +189,30 @@ export async function runScan(): Promise<void> {
 
     // a race condition where multiple concurrent stocks exceed the daily limit
     const currentCount = await countTodayTradeIdeas();
-    if (currentCount >= config.scanner.maxSignalsPerDay) return;
+    if (currentCount >= config.scanner.maxSignalsPerDay) {
+      log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+        reason: 'MAX_SIGNALS_PER_DAY',
+        current: currentCount,
+        max: config.scanner.maxSignalsPerDay,
+        marketType: 'stocks',
+        scope: 'symbol_precheck',
+        symbol: stock.ticker,
+      });
+      return;
+    }
 
     const alreadyActive = await hasActiveIdeaForTicker(stock.ticker);
-    if (alreadyActive) return;
+    if (alreadyActive) {
+      log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+        reason: 'ACTIVE_IDEA_EXISTS',
+        current: 1,
+        max: 1,
+        marketType: 'stocks',
+        scope: 'symbol_precheck',
+        symbol: stock.ticker,
+      });
+      return;
+    }
 
     // Collect all valid signals across timeframes
     const allSignals: any[] = [];
@@ -533,6 +560,23 @@ export async function runScan(): Promise<void> {
 
     if (portfolioResult.rejected) {
       scanSummary.portfolioRejected += 1;
+      log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+        reason: 'PORTFOLIO_LIMIT',
+        current: {
+          totalActiveExposure: Number(portfolioResult.snapshot.totalActiveExposure.toFixed(2)),
+          normalizedExposure: Number(portfolioResult.snapshot.normalizedExposure.toFixed(2)),
+          cryptoAllocationPct: Number(portfolioResult.snapshot.cryptoAllocation.toFixed(2)),
+          correlationClusters: portfolioResult.snapshot.correlationClusters.length,
+        },
+        max: {
+          maxActiveExposure: config.portfolio.maxActiveExposure,
+          maxSectorExposurePct: config.portfolio.maxSectorExposurePct,
+          maxCorrelatedTrades: config.portfolio.correlatedTradeLimit,
+        },
+        marketType: 'stocks',
+        symbol: stock.ticker,
+        detail: portfolioResult.reason,
+      });
       log.info('[PORTFOLIO_RISK_REJECT]', {
         symbol: stock.ticker,
         strategy: bestSignal.strategy,
@@ -816,7 +860,17 @@ export async function runScan(): Promise<void> {
     }
 
     const finalCount = await countTodayTradeIdeas();
-    if (finalCount >= config.scanner.maxSignalsPerDay) return;
+    if (finalCount >= config.scanner.maxSignalsPerDay) {
+      log.warn('[SIGNAL_LIMIT_BLOCKED]', {
+        reason: 'MAX_SIGNALS_PER_DAY',
+        current: finalCount,
+        max: config.scanner.maxSignalsPerDay,
+        marketType: 'stocks',
+        scope: 'final_insert',
+        symbol: stock.ticker,
+      });
+      return;
+    }
 
     log.info(`Signal: ${stock.ticker} on ${bestSignal.timeframe} via ${bestSignal.strategy} (${bestSignal.totalScore}pts ${bestSignal.quality})`);
 
