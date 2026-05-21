@@ -4,7 +4,7 @@
   "description": "AI Stock Trade Ideas Telegram Bot - Real market data, strategy-based signals, full trade tracking",
   "private": true,
   "scripts": {
-    "build": "next build --webpack",
+    "build": "tsc --project tsconfig.build.json",
     "build:bot": "tsc --project tsconfig.build.json",
     "build:frontend": "next build --webpack",
     "start": "node dist/index.js",
