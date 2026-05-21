@@ -29,7 +29,7 @@ export class CryptoMomentumBreakoutStrategy {
     const resistance = resistances.length > 0 ? resistances[resistances.length - 1] : 0;
     const breakoutThreshold = atr > 0 ? resistance - (atr * 0.2) : resistance * 0.998;
 
-    log.info('[RELAXED_FILTER] Breakout tolerance active', {
+    log.debug('[RELAXED_FILTER] Breakout tolerance active', {
       ticker,
       timeframe,
       resistance,
@@ -55,7 +55,7 @@ export class CryptoMomentumBreakoutStrategy {
       last.close >= last.open * 0.998 ||
       (candleRange > 0 && candleBody >= candleRange * 0.3);
 
-    log.info('[RELAXED_FILTER] confirmation tolerance active', {
+    log.debug('[RELAXED_FILTER] confirmation tolerance active', {
       ticker,
       timeframe,
       close: last.close,

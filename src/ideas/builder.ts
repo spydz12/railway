@@ -18,7 +18,7 @@ export function buildTradeIdea(
   const rawDirection = (result.side || (result as any).setup?.side || result.direction) as string | undefined;
   const normalizedDirection = rawDirection?.toUpperCase() === 'LONG' ? 'LONG' : 'SHORT';
 
-  logger.info('[DIRECTION_NORMALIZED]', {
+  logger.debug('[DIRECTION_NORMALIZED]', {
     rawDirection,
     normalizedDirection,
   });

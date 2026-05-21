@@ -1207,7 +1207,7 @@ export async function insertTradeIdea(idea: TradeIdeaInsert): Promise<TradeIdea 
   const rawDirection = (idea as any).direction as string | undefined;
   const normalizedDirection = rawDirection?.toUpperCase() === 'LONG' ? 'LONG' : 'SHORT';
 
-  log.info('[DIRECTION_NORMALIZED]', {
+  log.debug('[DIRECTION_NORMALIZED]', {
     rawDirection,
     normalizedDirection,
   });

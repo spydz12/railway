@@ -33,7 +33,7 @@ export class CryptoEMATrendCloudStrategy {
     const last = candles[candles.length - 1];
     const emaTrendThreshold = currentEma50 * 0.995;
 
-    log.info('[RELAXED_FILTER] EMA tolerance active', {
+    log.debug('[RELAXED_FILTER] EMA tolerance active', {
       ticker,
       timeframe,
       currentEma21,
@@ -59,7 +59,7 @@ export class CryptoEMATrendCloudStrategy {
       last.close >= last.open * 0.998 ||
       (candleRange > 0 && candleBody >= candleRange * 0.3);
 
-    log.info('[RELAXED_FILTER] confirmation tolerance active', {
+    log.debug('[RELAXED_FILTER] confirmation tolerance active', {
       ticker,
       timeframe,
       close: last.close,

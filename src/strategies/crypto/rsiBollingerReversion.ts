@@ -49,7 +49,7 @@ export class CryptoRSIBollingerReversionStrategy {
       lastCandle.close >= lastCandle.open * 0.998 ||
       (candleRange > 0 && candleBody >= candleRange * 0.3);
 
-    log.info('[RELAXED_FILTER] confirmation tolerance active', {
+    log.debug('[RELAXED_FILTER] confirmation tolerance active', {
       ticker,
       timeframe,
       close: lastCandle.close,

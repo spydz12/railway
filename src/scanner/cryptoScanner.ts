@@ -548,7 +548,7 @@ export async function runCryptoScan(): Promise<void> {
             return best;
           })];
       if (pendingCandidates.length > 1) {
-        log.info('[CRYPTO_DEDUPE]', {
+        log.debug('[CRYPTO_DEDUPE]', {
           symbol,
           totalCandidates: pendingCandidates.length,
           selected: aiCandidates[0]?.aiCandidate.strategy,
@@ -899,7 +899,7 @@ export async function runCryptoScan(): Promise<void> {
 
   await Promise.allSettled(orderedSymbols.map((symbol) => limit(() => scanSymbol(symbol))));
 
-  log.info('[CRYPTO_SCAN_SUMMARY]', {
+  log.debug('[CRYPTO_SCAN_SUMMARY]', {
     symbolsScanned: summary.symbolsScanned,
     setupsDetected: summary.setupsDetected,
     tradeIdeasCreated: summary.tradeIdeasCreated,

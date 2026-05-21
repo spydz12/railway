@@ -29,7 +29,7 @@ export class CryptoLiquiditySweepReversalStrategy {
     const lowerWick = Math.min(last.open, last.close) - last.low;
     const hasHammerTolerance = isHammer(last) || lowerWick > candleBody * 1.5;
 
-    log.info('[RELAXED_FILTER] confirmation tolerance active', {
+    log.debug('[RELAXED_FILTER] confirmation tolerance active', {
       ticker,
       timeframe,
       lowerWick,
