@@ -771,6 +771,44 @@ export async function getRegisteredStrategySlugs(): Promise<string[]> {
     .filter(Boolean);
 }
 
+function strategyNameFromSlug(slug: string): string {
+  return slug
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+export async function ensureRegisteredStrategySlugs(slugs: string[]): Promise<string[]> {
+  const uniqueSlugs = Array.from(new Set(slugs.filter(Boolean)));
+  if (uniqueSlugs.length === 0) {
+    return [];
+  }
+
+  const db = getDbClient();
+  const { error } = await db
+    .from('strategies')
+    .upsert(
+      uniqueSlugs.map((slug) => ({
+        slug,
+        name: strategyNameFromSlug(slug),
+        description: 'Auto-registered at startup',
+        enabled: true,
+        min_confidence: 60,
+      })),
+      { onConflict: 'slug' }
+    );
+
+  if (error) {
+    log.error('Failed to auto-register strategy slugs', {
+      error: error.message,
+      count: uniqueSlugs.length,
+    });
+    return [];
+  }
+
+  return uniqueSlugs;
+}
+
 export async function hasRecentSignalFingerprint(fingerprint: string): Promise<boolean> {
   const db = getDbClient();
   const { data, error } = await db
@@ -1180,6 +1218,7 @@ export async function insertTradeIdea(idea: TradeIdeaInsert): Promise<TradeIdea 
     reasons: idea.reasons ?? [],
     rejection_reasons: idea.rejection_reasons ?? [],
   };
+  log.info('[TRADE_IDEA_INSERT_STATUS]', { status: safeIdea.status });
   log.debug('[DB_INSERT]', { table: 'trade_ideas', ticker: safeIdea.ticker, keys: Object.keys(safeIdea) });
   const { data, error } = await db
     .from('trade_ideas')

@@ -263,7 +263,7 @@ export async function runCryptoScan(): Promise<void> {
           const relativeVolume = avgVol > 0 ? last.volume / avgVol : 0;
           const passedVolume = relativeVolume >= effectiveVolumeThreshold;
 
-          log.info('[CRYPTO_VOLUME]', {
+          log.debug('[CRYPTO_VOLUME]', {
             symbol,
             timeframe,
             currentVolume: last.volume,
@@ -325,7 +325,7 @@ export async function runCryptoScan(): Promise<void> {
               ? 1.5
               : config.crypto.minRiskReward;
 
-            log.info('[CRYPTO_RR_CHECK]', {
+            log.debug('[CRYPTO_RR_CHECK]', {
               strategy: result.strategy,
               rr: result.riskReward,
               effectiveMinRR,
@@ -456,7 +456,7 @@ export async function runCryptoScan(): Promise<void> {
                 },
               });
 
-              log.info('[CRYPTO_WATCH_CANDIDATE]', {
+              log.debug('[CRYPTO_WATCH_CANDIDATE]', {
                 symbol,
                 strategy: scoredSignal.strategy,
                 quality: scoredSignal.quality,
@@ -924,7 +924,7 @@ export async function runCryptoScan(): Promise<void> {
     aiWatch: summary.aiWatch,
   });
 
-  log.info('[PERFORMANCE_METRICS]', {
+  log.debug('[PERFORMANCE_METRICS]', {
     totalScans: summary.symbolsScanned,
     setupsFound: summary.setupsDetected,
     aiApprovals: summary.aiApproved,
@@ -937,7 +937,7 @@ export async function runCryptoScan(): Promise<void> {
   const approvedRate = summary.setupsDetected > 0
     ? (summary.aiApproved / summary.setupsDetected) * 100
     : 0;
-  log.info('[PIPELINE_HEALTH]', {
+  log.debug('[PIPELINE_HEALTH]', {
     setupsDetected: summary.setupsDetected,
     aiApproved: summary.aiApproved,
     approvedRate: Number(approvedRate.toFixed(1)),

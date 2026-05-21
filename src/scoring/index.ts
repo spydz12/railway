@@ -325,7 +325,7 @@ export class ScoringEngine {
       quality = SignalQuality.REJECT;
     }
 
-    log.info('[SCORING]', {
+    log.debug('[SCORING]', {
       strategy: signal.strategy,
       category: strategyCategory,
       marketRegime: marketData.regime,

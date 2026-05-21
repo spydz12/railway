@@ -10,7 +10,7 @@ import { runStartupRecovery } from '../ops/startupRecovery';
 import { incrementCounter, logMetricsSummary } from '../observability/metrics';
 import { getEnabledStrategies } from '../strategies';
 import { getEnabledCryptoStrategies } from '../strategies/crypto';
-import { getRegisteredStrategySlugs } from '../database/queries';
+import { ensureRegisteredStrategySlugs, getRegisteredStrategySlugs } from '../database/queries';
 import { getDbClient } from '../database/client';
 import { startScanner } from './startScanner';
 import { startTracking } from './startTracking';
@@ -32,7 +32,16 @@ async function validateStrategySlugRegistry(): Promise<void> {
   const missing = emittedSlugs.filter((slug) => !registeredSet.has(slug));
 
   if (missing.length > 0) {
-    logger.error('[MISSING_STRATEGY_SLUG]', {
+    const inserted = await ensureRegisteredStrategySlugs(missing);
+    if (inserted.length > 0) {
+      logger.info('[MISSING_STRATEGY_SLUG_AUTO_REGISTERED]', {
+        inserted,
+        insertedCount: inserted.length,
+      });
+      return;
+    }
+
+    logger.warn('[MISSING_STRATEGY_SLUG]', {
       missing,
       emittedCount: emittedSlugs.length,
       registeredCount: registered.length,
