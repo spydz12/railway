@@ -71,6 +71,11 @@ export const config = {
     watchSignalsInTestMode: optional('WATCH_SIGNALS_IN_TEST_MODE', 'true') === 'true',
   },
 
+  stocks: {
+    enabled: optional('ENABLE_STOCKS', 'true') !== 'false',
+    scannerEnabled: optional('STOCK_SCANNER_ENABLED', optional('ENABLE_STOCKS', 'true')) !== 'false',
+  },
+
   crypto: {
     enabled: optional('ENABLE_CRYPTO', 'false') === 'true',
     provider: optional('CRYPTO_PROVIDER', 'binance').toLowerCase(),

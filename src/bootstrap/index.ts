@@ -4,7 +4,7 @@ import { logger, logCritical } from '../utils/logger';
 import { config, validateRuntimeEnvironment } from '../config';
 import { validateDeploymentEnv } from '../config/env';
 import { testConnection } from '../telegram/bot';
-import { getProvider } from '../providers';
+import { getCryptoProvider, getProvider } from '../providers';
 import { startApiServer } from '../api';
 import { runStartupRecovery } from '../ops/startupRecovery';
 import { incrementCounter, logMetricsSummary } from '../observability/metrics';
@@ -114,8 +114,16 @@ export async function bootstrap(): Promise<void> {
     }
 
     try {
-      const provider = getProvider();
-      logger.info(`Market data provider active: ${provider.name}`);
+      if (process.env.ENABLE_STOCKS === 'false' || !config.stocks.enabled) {
+        logger.info('ENABLE_STOCKS=false detected, bypassing stock provider initialization');
+        if (config.crypto.enabled) {
+          const cryptoProvider = getCryptoProvider();
+          logger.info(`Crypto provider active: ${cryptoProvider.name}`);
+        }
+      } else {
+        const provider = getProvider();
+        logger.info(`Market data provider active: ${provider.name}`);
+      }
     } catch (err: unknown) {
       logger.error('Failed to initialize market data provider', {
         err: (err as Error).message,

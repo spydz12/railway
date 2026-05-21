@@ -12,29 +12,33 @@ let isRunningStock = false;
 let isRunningCrypto = false;
 
 export function startScannerWorker(): void {
-  const intervalMins = Math.max(1, config.scanner.intervalMinutes);
-  const cronExpression = `*/${intervalMins} * * * *`;
+  if (config.stocks.enabled && config.stocks.scannerEnabled) {
+    const intervalMins = Math.max(1, config.scanner.intervalMinutes);
+    const cronExpression = `*/${intervalMins} * * * *`;
 
-  log.info(`Scanner worker starting. Stock interval: every ${intervalMins} minute(s)`);
+    log.info(`Scanner worker starting. Stock interval: every ${intervalMins} minute(s)`);
 
-  cron.schedule(cronExpression, async () => {
-    if (isRunningStock) {
-      log.warn('Stock scanner tick skipped — previous stock scan still in progress');
-      return;
-    }
-    isRunningStock = true;
-    log.info('Stock scanner tick — starting market scan');
-    try {
-        await timeAsync('scanner.stock.scan', () =>
-          withTimeout(runScan(), config.ops.scanTimeoutMs, 'stock_scan')
-        );
-    } catch (err: unknown) {
-        incrementCounter('scanner.stock.errors');
-      log.error('Stock scanner worker error', { err: (err as Error).message });
-    } finally {
-      isRunningStock = false;
-    }
-  });
+    cron.schedule(cronExpression, async () => {
+      if (isRunningStock) {
+        log.warn('Stock scanner tick skipped — previous stock scan still in progress');
+        return;
+      }
+      isRunningStock = true;
+      log.info('Stock scanner tick — starting market scan');
+      try {
+          await timeAsync('scanner.stock.scan', () =>
+            withTimeout(runScan(), config.ops.scanTimeoutMs, 'stock_scan')
+          );
+      } catch (err: unknown) {
+          incrementCounter('scanner.stock.errors');
+        log.error('Stock scanner worker error', { err: (err as Error).message });
+      } finally {
+        isRunningStock = false;
+      }
+    });
+  } else {
+    log.info('Stock scanner initialization skipped (ENABLE_STOCKS=false or STOCK_SCANNER_ENABLED=false)');
+  }
 
   if (config.crypto.enabled) {
     const cryptoIntervalMins = Math.max(1, config.crypto.intervalMinutes);
