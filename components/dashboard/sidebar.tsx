@@ -11,10 +11,12 @@ import {
   Home,
   GitBranch,
   Rocket,
+  Bitcoin,
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Crypto Signals', href: '/dashboard/crypto', icon: Bitcoin },
   { name: 'Signals', href: '/dashboard/signals', icon: Activity },
   { name: 'Performance', href: '/dashboard/performance', icon: PieChart },
   { name: 'Reinforcement', href: '/dashboard/reinforcement', icon: GitBranch },
