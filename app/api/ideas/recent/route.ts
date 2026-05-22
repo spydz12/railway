@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
       .from('trade_ideas')
       .select(
         'id, ticker, direction, strategy_slug, confidence_score, signal_quality, status, ' +
-        'take_profit_1, take_profit_2, stop_loss, created_at, market_type, ai_decision'
+        'entry_price, take_profit_1, take_profit_2, take_profit_3, stop_loss, ' +
+        'created_at, market_type, ai_decision'
       )
       .order('created_at', { ascending: false })
       .limit(limit)
