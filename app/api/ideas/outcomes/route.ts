@@ -4,6 +4,27 @@ import { createClient } from '@supabase/supabase-js'
 // Returns trade ideas enriched with their latest tracked price from trade_idea_updates.
 // Used by the Outcome Analytics table in the Crypto Dashboard.
 
+type IdeaRow = {
+  id: string
+  ticker: string
+  direction: string
+  strategy_slug: string
+  entry_price: number | null
+  status: string
+  market_type: string | null
+  ai_decision: string | null
+  created_at: string
+  take_profit_1: number | null
+  take_profit_2: number | null
+  stop_loss: number | null
+}
+
+type UpdateRow = {
+  trade_idea_id: string | null
+  price_at_update: number | null
+  created_at: string
+}
+
 function getSupabaseAdmin() {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_ANON_KEY
@@ -33,7 +54,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: ideasError.message }, { status: 500 })
     }
 
-    const ideaList = ideas ?? []
+    const ideaList = (ideas ?? []) as unknown as IdeaRow[]
     if (ideaList.length === 0) return NextResponse.json([])
 
     const ideaIds = ideaList.map((i) => i.id)
@@ -48,7 +69,7 @@ export async function GET(request: NextRequest) {
 
     // Pick the latest price per idea
     const latestPrice: Record<string, number | null> = {}
-    for (const upd of updates ?? []) {
+    for (const upd of (updates ?? []) as UpdateRow[]) {
       if (upd.trade_idea_id && !(upd.trade_idea_id in latestPrice)) {
         latestPrice[upd.trade_idea_id] = upd.price_at_update ?? null
       }

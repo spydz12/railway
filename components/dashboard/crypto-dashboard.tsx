@@ -1,75 +1,6 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
-import { Badge } from '../ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table'
-import { TrendingUp, Activity, BarChart2, ShieldCheck, BrainCircuit } from 'lucide-react'
-import { useRealtimeOrPolling } from '../../hooks/useRealtimeOrPolling'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface TradeIdea {
-  id: string
-  ticker: string
-  direction: string
-  strategy_slug: string
-  confidence_score: number
-  signal_quality: string
-  status: string
-  take_profit_1: number | null
-  take_profit_2: number | null
-  stop_loss: number | null
-  created_at: string
-  market_type: string
-  ai_decision?: string | null
-}
-
-// ─── Status badge ─────────────────────────────────────────────────────────────
-
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  watch:        { label: 'Watch',        className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' },
-  pending:      { label: 'Pending',      className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' },
-  active:       { label: 'Active',       className: 'bg-blue-500/20 text-blue-400 border-blue-500/40' },
-  entered:      { label: 'Entered',      className: 'bg-blue-500/20 text-blue-400 border-blue-500/40' },
-  open:         { label: 'Open',         className: 'bg-blue-500/20 text-blue-400 border-blue-500/40' },
-  tp1_reached:  { label: 'TP1 Hit',      className: 'bg-green-500/20 text-green-400 border-green-500/40' },
-  tp2_reached:  { label: 'TP2 Hit',      className: 'bg-green-600/20 text-green-300 border-green-600/40' },
-  closed:       { label: 'Closed',       className: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/40' },
-  stopped:      { label: 'SL Hit',       className: 'bg-red-500/20 text-red-400 border-red-500/40' },
-  invalidated:  { label: 'Invalidated',  className: 'bg-red-500/20 text-red-400 border-red-500/40' },
-  rejected:     { label: 'Rejected',     className: 'bg-red-500/20 text-red-400 border-red-500/40' },
-  expired:      { label: 'Expired',      className: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/40' },
-  candidate:    { label: 'Candidate',    className: 'bg-purple-500/20 text-purple-400 border-purple-500/40' },
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status.toLowerCase()] ?? { label: status, className: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/40' }
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cfg.className}`}>
-      {cfg.label}
-    </span>
-  )
-}
-
-function DirectionBadge({ direction }: { direction: string }) {
-  const isLong = direction?.toUpperCase() === 'LONG'
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${isLong ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-      {isLong ? '▲' : '▼'} {direction?.toUpperCase() ?? '—'}
-    </span>
-  )
-}
-'use client'
-
-import { useCallback, useMemo, useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -141,7 +72,7 @@ interface OutcomeIdea {
 
 // ─── Status configs ───────────────────────────────────────────────────────────
 
-const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
+const STATUS_CONFIG_OUTCOME: Record<string, { label: string; cls: string }> = {
   watch:         { label: 'Watch',        cls: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' },
   pending:       { label: 'Pending',      cls: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' },
   active:        { label: 'Active',       cls: 'bg-blue-500/20 text-blue-400 border-blue-500/40' },
@@ -161,7 +92,7 @@ const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status?.toLowerCase()] ?? { label: status, cls: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/40' }
+  const cfg = STATUS_CONFIG_OUTCOME[status?.toLowerCase()] ?? { label: status, cls: 'bg-zinc-500/20 text-zinc-400 border-zinc-500/40' }
   return (
     <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cfg.cls}`}>
       {cfg.label}
